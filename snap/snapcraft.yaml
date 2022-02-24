@@ -1,0 +1,123 @@
+name: motioneye
+base: core18
+adopt-info: motioneye
+summary: motionEye is a web frontend for the motion daemon, written in Python.
+description: |
+  This snap ships with all required binaries included and will automatically
+  start the motionEye service listening on port 8765 after installation.
+  Just go to http://[your_ip]:8765/ with a web browser, log in to the UI and
+  start configuring your webcam for motion detection.
+
+  To get the full functionality please connact the camera, log-observe and
+  mount-observe interfaces using the snap connect command.
+
+  If installed on a Raspberry Pi for use with the CSI attached RPi Cam, make
+  sure to have "start_x=1" and "gpu_mem=128" (or higher) set in your config.txt
+  On an Ubuntu Core system you can achieve this via the two commands below:
+
+      snap set system pi-config.start-x=1
+      snap set system pi-config.gpu-mem=256
+
+  The motioneye.conf file can be found in /var/snap/motioneye/current/motioneye/
+
+  Recorded videos and captured photos are stored in
+  /var/snap/motioneye/current/media/
+
+  If you want to store photos and videos to external media (USB, SD card), please
+  connect the removable-media snap interface, then you can select a path under /media
+  via the administration interface.
+
+grade: stable
+confinement: strict
+
+architectures:
+  - build-on: amd64
+  - build-on: arm64
+  - build-on: armhf
+
+apps:
+   motioneye:
+     command: bin/snapcraft-preload $SNAP/usr/bin/python2 $SNAP/bin/meyectl startserver -c /etc/motioneye/motioneye.conf
+     daemon: simple
+     plugs:
+       - camera
+       - log-observe
+       - mount-observe
+       - network
+       - network-bind
+       - opengl
+       - removable-media
+
+layout:
+  /etc/motioneye:
+    bind: $SNAP_DATA/motioneye
+  /var/lib/motioneye:
+    bind: $SNAP_DATA/media
+  /var/log:
+    bind: $SNAP_DATA/log
+
+parts:
+  pi-libs:
+    source: https://github.com/raspberrypi/firmware.git
+    source-depth: 1
+    plugin: nil
+    override-pull: |
+      case "$(arch)" in
+        "aarch64"|"armv7l")
+          snapcraftctl pull
+        ;;
+        *)
+          echo "not on arm, not pulling pi libs"
+        ;;
+      esac
+    override-build: |
+      case "$(arch)" in
+        "aarch64"|"armv7l")
+          mkdir -p $SNAPCRAFT_PART_INSTALL/usr
+          cp -av hardfp/opt/vc/bin $SNAPCRAFT_PART_INSTALL/usr/
+          cp -av hardfp/opt/vc/lib $SNAPCRAFT_PART_INSTALL/usr/
+        ;;
+        *)
+          echo "not building on arm, not installing pi libs"
+        ;;
+      esac
+  prereq:
+    plugin: nil
+    stage-packages:
+      - curl
+      - motion
+      - ffmpeg
+      - v4l-utils
+      - libglu1-mesa
+      - libslang2
+      - freeglut3
+      - on arm64:
+        - liblcms2-2
+    build-packages:
+      - libffi-dev
+      - libzbar-dev
+      - libzbar0
+      - libssl-dev
+      - libcurl4-openssl-dev
+      - libjpeg-dev
+  motioneye:
+    plugin: python
+    after: [ prereq ]
+    python-version: python2
+    python-packages:
+      - motioneye
+    override-build: |
+      snapcraftctl build
+      VER="$(grep VERSION $SNAPCRAFT_PART_INSTALL/lib/python2.7/site-packages/motioneye/__init__.py | \
+            sed 's/^.*= //;s/"//g')"
+      snapcraftctl set-version $VER
+  snapcraft-preload:
+    source: https://github.com/sergiusens/snapcraft-preload.git
+    plugin: cmake
+    build-packages:
+      - on amd64:
+        - gcc-multilib
+        - g++-multilib
+    stage-packages:
+      - on amd64:
+        - lib32stdc++6
