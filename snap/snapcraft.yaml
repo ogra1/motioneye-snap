@@ -18,10 +18,10 @@ description: |
       snap set system pi-config.start-x=1
       snap set system pi-config.gpu-mem=256
 
-  The motioneye.conf file can be found in /var/snap/motioneye/current/motioneye/
+  The motioneye.conf file can be found in /var/snap/motioneye/common/motioneye/
 
   Recorded videos and captured photos are stored in
-  /var/snap/motioneye/current/media/
+  /var/snap/motioneye/common/media/
 
   If you want to store photos and videos to external media (USB, SD card), please
   connect the removable-media snap interface, then you can select a path under /media
