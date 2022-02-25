@@ -90,7 +90,6 @@ parts:
       - v4l-utils
       - libglu1-mesa
       - libslang2
-      - lsb-release
       - freeglut3
       - on arm64:
         - liblcms2-2
@@ -112,6 +111,8 @@ parts:
       VER="$(grep VERSION $SNAPCRAFT_PART_INSTALL/lib/python2.7/site-packages/motioneye/__init__.py | \
             sed 's/^.*= //;s/"//g')"
       snapcraftctl set-version $VER
+    stage-packages:
+      - lsb-release
   snapcraft-preload:
     source: https://github.com/sergiusens/snapcraft-preload.git
     plugin: cmake
