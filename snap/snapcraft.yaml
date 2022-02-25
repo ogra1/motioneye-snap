@@ -18,7 +18,7 @@ description: |
       snap set system pi-config.start-x=1
       snap set system pi-config.gpu-mem=256
 
-  The motioneye.conf file can be found in /var/snap/motioneye/common/motioneye/
+  The motioneye.conf file can be found in /var/snap/motioneye/current/motioneye/
 
   Recorded videos and captured photos are stored in
   /var/snap/motioneye/common/media/
@@ -90,6 +90,7 @@ parts:
       - v4l-utils
       - libglu1-mesa
       - libslang2
+      - lsb-release
       - freeglut3
       - on arm64:
         - liblcms2-2
