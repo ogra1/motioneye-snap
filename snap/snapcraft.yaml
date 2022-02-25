@@ -111,6 +111,9 @@ parts:
       VER="$(grep VERSION $SNAPCRAFT_PART_INSTALL/lib/python2.7/site-packages/motioneye/__init__.py | \
             sed 's/^.*= //;s/"//g')"
       snapcraftctl set-version $VER
+  stage-lsb-release:
+    plugin: nil
+    after: [ motioneye ]
     stage-packages:
       - lsb-release
   snapcraft-preload:
