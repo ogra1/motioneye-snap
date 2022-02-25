@@ -1,6 +1,6 @@
 #! /bin/sh
 
 [ -e /etc/motioneye/motioneye.conf ] || \
-	sed 's;/var/run;/tmp;' \
+	sed 's;/var/run;/tmp;;s;/var/lib/motioneye;/var/snap/motioneye/common/media;' \
 	$SNAP/share/motioneye/extra/motioneye.conf.sample \
 	>/etc/motioneye/motioneye.conf
