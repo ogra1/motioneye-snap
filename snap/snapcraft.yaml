@@ -50,11 +50,11 @@ apps:
 
 layout:
   /etc/motioneye:
-    bind: $SNAP_DATA/motioneye
+    bind: $SNAP_COMMON/motioneye
   /var/lib/motioneye:
-    bind: $SNAP_DATA/media
+    bind: $SNAP_COMMON/media
   /var/log:
-    bind: $SNAP_DATA/log
+    bind: $SNAP_COMMON/log
 
 parts:
   pi-libs:
